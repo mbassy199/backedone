@@ -16,8 +16,10 @@ from environs import Env
 import os
 import dj_database_url
 
+
 env = Env()
 env.read_env()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,8 +34,26 @@ SECRET_KEY = 'django-insecure-b*tuoe%^o+=^35$0fufrm=oamh^(o0tabn39(7ni12(i-oup+4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["website-domain.com", "127.0.0.1"]
-CSRF_TRUSTED_ORIGINS = ['https://website-domain.com', 'https://127.0.0.1']
+
+
+ALLOWED_HOSTS = [
+    "backend-priti-production.up.railway.app",  # Correct Railway backend domain
+    "my.mypritistore.com",                      # Custom domain with 'www'
+    ".railway.app",                             # All Railway subdomains
+    "ecopritistore.com",                        # Custom domain
+    "ecommerce-frontend-two-ruddy.vercel.app",  # Vercel frontend domain
+    "127.0.0.1",                                # Localhost
+    "localhost",                                # Localhost with no port
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://backend-priti-production.up.railway.app',  # Correct Railway backend domain
+    'https://my.mypritistore.com',                      # Your custom domain
+    'https://ecommerce-frontend-two-ruddy.vercel.app',  # Vercel frontend domain
+    'http://127.0.0.1',                                # Localhost for development
+]
+
+
 SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin-allow-popups'
 
 
@@ -106,16 +126,19 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'railway',                       # Database name
+        'USER': 'postgres',                      # Username
+        'PASSWORD': 'TgOReQTFxkzdJmlkNDBBqhRljovBITzf',  # Password
+        'HOST': 'junction.proxy.rlwy.net',       # Host
+        'PORT': '20359',                         # Port
     }
 }
 
-
-db_from_env = dj_database_url.config(conn_max_age=600)
-DATABASES['default'].update(db_from_env)
 
 
 # Password validation
@@ -161,33 +184,21 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 
 # AWS Configs
-# AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
+AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME", "bazy-bucket")  # Default bucket name as fallback
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = 'public-read'
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+AWS_LOCATION = 'static'
 
-# AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
+# Constructing the custom domain using the bucket name
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 
-# AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
-
-# AWS_S3_FILE_OVERWRITE = False
-
-# AWS_DEFAULT_ACL = 'public-read'
-
-# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-
-# STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-
-# AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
-
-# AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
-
-# AWS_LOCATION = 'static'
-
-# STATIC_LOCATION = 'static'
-
-# STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
-
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
+# STATIC_URL dynamically formed using AWS_S3_CUSTOM_DOMAIN
+STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -196,13 +207,8 @@ AUTH_USER_MODEL = 'userauths.User'
 # Site URL
 SITE_URL = env("SITE_URL")
 
-# Stripe API Keys
-STRIPE_PUBLIC_KEY = env("STRIPE_PUBLIC_KEY")
-STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY")
 
-# Paypal API Keys
-PAYPAL_CLIENT_ID = env('PAYPAL_CLIENT_ID')
-PAYPAL_SECRET_ID = env('PAYPAL_SECRET_ID')
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -211,14 +217,16 @@ REST_FRAMEWORK = {
 }
 
 ANYMAIL = {
-    "MAILGUN_API_KEY": os.environ.get("MAILGUN_API_KEY"),
-    "MAILGUN_SENDER_DOMAIN": os.environ.get("MAILGUN_SENDER_DOMAIN"),
+    "MAILJET_API_KEY": env("MAILJET_API_KEY"),
+    "MAILJET_SECRET_KEY": env("MAILJET_SECRET_KEY"),
 }
 
-FROM_EMAIL = " desphixs@gmail.com"
-EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
-DEFAULT_FROM_EMAIL = " desphixs@gmail.com"
-SERVER_EMAIL = " desphixs@gmail.com"
+# Email settings
+DEFAULT_FROM_EMAIL = "wyarquah@gmail.com"
+SERVER_EMAIL = "wyarquah@gmail.com"
+FROM_EMAIL = "wyarquah@gmail.com"  # Add this line
+
+EMAIL_BACKEND = "anymail.backends.mailjet.EmailBackend"
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -257,13 +265,11 @@ SIMPLE_JWT = {
 
 
 JAZZMIN_SETTINGS = {
-    "site_title": "Desphixs",
-    "site_header": "Desphixs",
-    "site_brand": "Modern Marketplace ",
-    "site_icon": "images/favicon.ico",
-    "site_logo": "images/logos/logo.jpg",
-    "welcome_sign": "Welcome To Desphixs",
-    "copyright": "All right reserved to Desphixs",
+    "site_title": "Mypriti-store",
+    "site_header": "Mypriti-store",
+    "site_brand": "priti-store Marketplace",
+    "welcome_sign": "Welcome To Priti-Store",
+    "copyright": "All right reserved to Priti-Store",
     "user_avatar": "images/photos/logo.jpg",
     "topmenu_links": [
         {"name": "Dashboard", "url": "home",
