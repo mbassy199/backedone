@@ -43,6 +43,7 @@ ALLOWED_HOSTS = [
     "ecopritistore.com",                        # Custom domain
     "ecommerce-frontend-two-ruddy.vercel.app",  # Vercel frontend domain
     "backedone-89yvv0ir0-williams-projects-81f89765.vercel.app",  # Vercel backend domain
+    "backedone-f894aorwy-williams-projects-81f89765.vercel.app",  # New Vercel backend domain
     "127.0.0.1",                                # Localhost
     "localhost",                                # Localhost with no port
 ]
