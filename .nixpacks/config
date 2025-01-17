@@ -1,0 +1,8 @@
+{
+  "phases": {
+    "setup": "python39, postgresql_16, gcc",
+    "install": "python -m venv /opt/venv && . /opt/venv/bin/activate && pip install -r requirements.txt",
+    "start": "gunicorn backend.wsgi --log-file -"
+  }
+}
+
