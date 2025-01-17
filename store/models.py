@@ -288,8 +288,10 @@ class Product(models.Model):
 
     # Calculates the discount percentage between old and new prices
     def get_precentage(self):
-        new_price = ((self.old_price - self.price) / self.old_price) * 100
-        return round(new_price, 0)
+        if self.old_price and self.old_price > 0:
+            new_price = ((self.old_price - self.price) / self.old_price) * 100
+            return round(new_price, 0)
+        return 0
     
     # Calculates the average rating of the product
     def product_rating(self):
