@@ -42,10 +42,10 @@ ALLOWED_HOSTS = ['*']
 
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://backend-priti-production.up.railway.app',  # Correct Railway backend domain
-    'https://my.mypritistore.com',                      # Your custom domain
-    'https://ecommerce-frontend-two-ruddy.vercel.app',  # Vercel frontend domain
-    'http://127.0.0.1',                                # Localhost for development
+    'https://backedone-vert.vercel.app',  # Vercel frontend domain (correct backend here)
+    'https://ecommerce-frontend-two-ruddy.vercel.app',  # Vercel frontend domain (if different)
+    'http://127.0.0.1',                    # Localhost for development
+    'http://localhost',                    # Add localhost explicitly if needed
 ]
 
 
