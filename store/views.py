@@ -92,91 +92,7 @@ class ProductDetailView(generics.RetrieveAPIView):
         slug = self.kwargs.get('slug')
         return Product.objects.get(slug=slug)
     
-# class CartApiView(generics.ListCreateAPIView):
-#     serializer_class = CartSerializer
-#     queryset = Cart.objects.all()
-#     permission_classes = (AllowAny,)
-
-#     def create(self, request, *args, **kwargs):
-#         payload = request.data
-        
-#         product_id = payload['product']
-#         user_id = payload['user']
-#         qty = payload['qty']
-#         price = payload['price']
-#         shipping_amount = payload['shipping_amount']
-#         country = payload['country']
-#         size = payload['size']
-#         color = payload['color']
-#         cart_id = payload['cart_id']
-        
-#         product = Product.objects.filter(status="published", id=product_id).first()
-#         if user_id != "undefined":
-#             user = User.objects.filter(id=user_id).first()
-#         else:
-#             user = None
-        
-#         tax = Tax.objects.filter(country=country).first()
-#         if tax:
-#             tax_rate = tax.rate / 100
-            
-#         else:
-#             tax_rate = 0
-
-#         cart = Cart.objects.filter(cart_id=cart_id, product=product).first()
-
-#         if cart:
-#             cart.product = product
-#             cart.user = user
-#             cart.qty = qty
-#             cart.price = price
-#             cart.sub_total = Decimal(price) * int(qty)
-#             cart.shipping_amount = Decimal(shipping_amount) * int(qty)
-#             cart.size = size
-#             cart.tax_fee = int(qty) * Decimal(tax_rate)
-#             cart.color = color
-#             cart.country = country
-#             cart.cart_id = cart_id
-
-#             config_settings = ConfigSettings.objects.first()
-
-#             if config_settings.service_fee_charge_type == "percentage":
-#                 service_fee_percentage = config_settings.service_fee_percentage / 100 
-#                 cart.service_fee = Decimal(service_fee_percentage) * cart.sub_total
-#             else:
-#                 cart.service_fee = config_settings.service_fee_flat_rate
-
-#             cart.total = cart.sub_total + cart.shipping_amount + cart.service_fee + cart.tax_fee
-#             cart.save()
-
-#             return Response({"message": "Cart updated successfully"}, status=status.HTTP_200_OK)
-#         else:
-#             cart = Cart()
-#             cart.product = product
-#             cart.user = user
-#             cart.qty = qty
-#             cart.price = price
-#             cart.sub_total = Decimal(price) * int(qty)
-#             cart.shipping_amount = Decimal(shipping_amount) * int(qty)
-#             cart.size = size
-#             cart.tax_fee = int(qty) * Decimal(tax_rate)
-#             cart.color = color
-#             cart.country = country
-#             cart.cart_id = cart_id
-
-#             config_settings = ConfigSettings.objects.first()
-
-#             if config_settings.service_fee_charge_type == "percentage":
-#                 service_fee_percentage = config_settings.service_fee_percentage / 100 
-#                 cart.service_fee = Decimal(service_fee_percentage) * cart.sub_total
-#             else:
-#                 cart.service_fee = config_settings.service_fee_flat_rate
-
-#             cart.total = cart.sub_total + cart.shipping_amount + cart.service_fee + cart.tax_fee
-#             cart.save()
-
-#             return Response( {"message": "Cart Created Successfully"}, status=status.HTTP_201_CREATED)
-
+    
 class CartApiView(generics.ListCreateAPIView):
     serializer_class = CartSerializer
     queryset = Cart.objects.all()
@@ -204,6 +120,7 @@ class CartApiView(generics.ListCreateAPIView):
         tax = Tax.objects.filter(country=country).first()
         if tax:
             tax_rate = tax.rate / 100
+            
         else:
             tax_rate = 0
 
@@ -224,19 +141,16 @@ class CartApiView(generics.ListCreateAPIView):
 
             config_settings = ConfigSettings.objects.first()
 
-            if config_settings:  # Ensure config_settings is not None
-                if config_settings.service_fee_charge_type == "percentage":
-                    service_fee_percentage = config_settings.service_fee_percentage / 100 
-                    cart.service_fee = Decimal(service_fee_percentage) * cart.sub_total
-                else:
-                    cart.service_fee = config_settings.service_fee_flat_rate
-
-                cart.total = cart.sub_total + cart.shipping_amount + cart.service_fee + cart.tax_fee
-                cart.save()
-
-                return Response({"message": "Cart updated successfully"}, status=status.HTTP_200_OK)
+            if config_settings.service_fee_charge_type == "percentage":
+                service_fee_percentage = config_settings.service_fee_percentage / 100 
+                cart.service_fee = Decimal(service_fee_percentage) * cart.sub_total
             else:
-                return Response({"message": "Config settings not found"}, status=status.HTTP_400_BAD_REQUEST)
+                cart.service_fee = config_settings.service_fee_flat_rate
+
+            cart.total = cart.sub_total + cart.shipping_amount + cart.service_fee + cart.tax_fee
+            cart.save()
+
+            return Response({"message": "Cart updated successfully"}, status=status.HTTP_200_OK)
         else:
             cart = Cart()
             cart.product = product
@@ -253,19 +167,16 @@ class CartApiView(generics.ListCreateAPIView):
 
             config_settings = ConfigSettings.objects.first()
 
-            if config_settings:  # Ensure config_settings is not None
-                if config_settings.service_fee_charge_type == "percentage":
-                    service_fee_percentage = config_settings.service_fee_percentage / 100 
-                    cart.service_fee = Decimal(service_fee_percentage) * cart.sub_total
-                else:
-                    cart.service_fee = config_settings.service_fee_flat_rate
-
-                cart.total = cart.sub_total + cart.shipping_amount + cart.service_fee + cart.tax_fee
-                cart.save()
-
-                return Response({"message": "Cart Created Successfully"}, status=status.HTTP_201_CREATED)
+            if config_settings.service_fee_charge_type == "percentage":
+                service_fee_percentage = config_settings.service_fee_percentage / 100 
+                cart.service_fee = Decimal(service_fee_percentage) * cart.sub_total
             else:
-                return Response({"message": "Config settings not found"}, status=status.HTTP_400_BAD_REQUEST)
+                cart.service_fee = config_settings.service_fee_flat_rate
+
+            cart.total = cart.sub_total + cart.shipping_amount + cart.service_fee + cart.tax_fee
+            cart.save()
+
+            return Response( {"message": "Cart Created Successfully"}, status=status.HTTP_201_CREATED)
 
 
 
